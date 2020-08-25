@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>WorkModel.qml</file>
+        <file>WorkBoard.qml</file>
+        <file>CopyPasteElement.qml</file>
+    </qresource>
+</RCC>
