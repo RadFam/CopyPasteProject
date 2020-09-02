@@ -5,7 +5,11 @@ import QtGraphicalEffects 1.0
 Rectangle {
     id: _copypasteelement
     property alias internalText: _elementNum
-    //property alias internalEdit: _textarea
+    property alias internalEdit: _textarea
+    property alias internalCopy: _copyBtn
+    property alias backgrCopy: _bkgrCopy
+    property alias internalPaste: _pasteBtn
+    property alias backgrPaste: _bkgrPaste
 
     color: "lightblue"
     border.color: "lightcyan"
@@ -59,9 +63,6 @@ Rectangle {
                 focus: true
                 //onVisibleChanged: if(visible) _textarea.forceActiveFocus()
                 onCursorRectangleChanged: _flkr.ensureVisible(cursorRectangle)
-                onEditingFinished: {
-                    console.log("edit finished")
-                }
             }
 
         }
@@ -93,6 +94,7 @@ Rectangle {
         }
 
         background: Rectangle{
+            id: _bkgrCopy
             color: "red"
             border.color: "lightpink"
             border.width: 3
@@ -105,7 +107,33 @@ Rectangle {
                 radius: 3
                 color: "gray"
             }
-        } 
+
+            state: "RELEASED"
+
+            states: [
+                State {
+                    name: "PRESSED"
+                    PropertyChanges { target: _bkgrCopy; color: "pink"}
+                },
+                State {
+                    name: "RELEASED"
+                    PropertyChanges { target: _bkgrCopy; color: "red"}
+                }
+            ]
+
+            transitions: [
+                Transition {
+                    from: "PRESSED"
+                    to: "RELEASED"
+                    ColorAnimation { target: _bkgrCopy; duration: 100}
+                },
+                Transition {
+                    from: "RELEASED"
+                    to: "PRESSED"
+                    ColorAnimation { target: _bkgrCopy; duration: 100}
+                }
+            ]
+        }
     }
 
     // Button "PASTE"
@@ -134,6 +162,7 @@ Rectangle {
         }
 
         background: Rectangle{
+            id: _bkgrPaste
             color: "mediumseagreen"
             border.color: "palegreen"
             border.width: 3
@@ -146,6 +175,40 @@ Rectangle {
                 radius: 3
                 color: "gray"
             }
+
+            state: "RELEASED"
+
+            /*
+            MouseArea {
+                anchors.fill: _bkgr
+                onPressed: _bkgr.state = "PRESSED"
+                onReleased: _bkgr.state = "RELEASED"
+            }
+            */
+
+            states: [
+                State {
+                    name: "PRESSED"
+                    PropertyChanges { target: _bkgrPaste; color: "lightgreen"}
+                },
+                State {
+                    name: "RELEASED"
+                    PropertyChanges { target: _bkgrPaste; color: "mediumseagreen"}
+                }
+            ]
+
+            transitions: [
+                Transition {
+                    from: "PRESSED"
+                    to: "RELEASED"
+                    ColorAnimation { target: _bkgrPaste; duration: 100}
+                },
+                Transition {
+                    from: "RELEASED"
+                    to: "PRESSED"
+                    ColorAnimation { target: _bkgrPaste; duration: 100}
+                }
+            ]
         }
     }
 

@@ -14,7 +14,10 @@ CpPstModel::CpPstModel(QObject* parent, size_t lengo):
     {
         qInfo() << changeData[i]->getInternalData();
     }
-    qInfo() << "Model initialized";
+
+    clipboard = QGuiApplication::clipboard();
+    clipString = "";
+    //qInfo() << "Model initialized";
 }
 
 
@@ -32,15 +35,21 @@ CpPstModel::~CpPstModel()
         changeData.clear();
 }
 
-void CpPstModel::CopyData(int index, const QString &text)
+void CpPstModel::getClipboardData(int ind)
 {
-
+    //changeData[ind]->setInternalData(clipboard->text());
+    setData(index(ind, 0), clipboard->text(), Qt::EditRole);
+    qInfo() << "Model changed " << changeData[ind]->getInternalData();
 }
 
+void CpPstModel::setClipboardData(int ind)
+{
+    clipboard->setText(changeData[ind]->getInternalData());
+    qInfo() << "Model saved " << changeData[ind]->getInternalData();
+}
 
 int CpPstModel::rowCount(const QModelIndex &/*parent*/) const
 {
-    qInfo() << "Default Length " << defaultLength;
     return static_cast<int>(defaultLength);
 }
 
@@ -53,26 +62,40 @@ QVariant CpPstModel::data(const QModelIndex &index, int role) const
 
     const auto index_row {static_cast<size_t>(index.row())};
 
-    //return QVariant(static_cast<QString>(changeData[index_row].getInternalData()));
+    if (role == Qt::DisplayRole){
+        return changeData[index_row]->getInternalData();
+        //return QVariant(static_cast<QString>(changeData[index_row]->getInternalData()));
+
+    }
+
     return {};
 }
 
 
-bool CpPstModel::setData(const QModelIndex &index, const QVariant &value, int role)
+bool CpPstModel::setData(const QModelIndex &ind, const QVariant &value, int role)
 {
-    if (index.isValid() && role == Qt::EditRole)
+    if (ind.isValid() && role == Qt::EditRole)
     {
-        const auto index_row {static_cast<size_t>(index.row())};
+        const auto index_row {static_cast<size_t>(ind.row())};
 
         changeData[index_row]->setInternalData(value.toString());
-
-        // Возможно, тут надо эмитировать сигнал
-        //.....
+        emit dataChanged(ind, ind, { Qt::EditRole, Qt::DisplayRole });
         qInfo() << "Model added " << changeData[index_row]->getInternalData();
 
         return true;
     }
+    qInfo() << "Model not added";
 
     return false;
+}
+
+QString CpPstModel::getClipString() const
+{
+    return clipString;
+}
+
+void CpPstModel::setClipString(const QString &value)
+{
+    clipString = value;
 }
 
